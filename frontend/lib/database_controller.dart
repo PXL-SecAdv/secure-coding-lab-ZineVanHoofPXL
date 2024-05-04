@@ -1,4 +1,5 @@
 import 'package:postgres/postgres.dart';
+import 'package:dotenv/dotenv.dart';
 
 class DatabaseController {
 
@@ -10,8 +11,9 @@ class DatabaseController {
   DatabaseController._fromConnection(this._dbConnection);
 
   factory DatabaseController._connect() {
+    var env = DotEnv(includePlatformEnvironment: false)..load();
 
-    final conn =  PostgreSQLConnection('localhost', 5434, 'pxldb', username: 'secadv', password: 'ilovesecurity');
+    final conn = PostgreSQLConnection('localhost', 5434, env['POSTGRES_NEW_DB']!, username: env['POSTGRES_NEW_USER']!, password: env['POSTGRES_NEW_PASSWORD']!);
     final wrapper = DatabaseController._fromConnection(conn);
     _finalizer.attach(wrapper, conn, detach: wrapper);
     return wrapper;

@@ -5,20 +5,25 @@ const bodyParser = require('body-parser');
 const app = express();
 const cors = require('cors')
 
+require('dotenv').config()
+
 const port=3000;
 
 const pool = new pg.Pool({
-    user: 'secadv',
+    user: process.env.POSTGRES_NEW_USER,
     host: 'db',
-    database: 'pxldb',
-    password: 'ilovesecurity',
+    database: process.env.POSTGRES_NEW_DB,
+    password: process.env.POSTGRES_NEW_PASSWORD,
     port: 5432,
     connectionTimeoutMillis: 5000
 })
 
 console.log("Connecting...:")
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:8080',
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+}));
 app.use(bodyParser.json());
 app.use(
     bodyParser.urlencoded({
@@ -30,9 +35,9 @@ app.get('/authenticate/:username/:password', async (request, response) => {
     const username = request.params.username;
     const password = request.params.password;
 
-    const query = `SELECT * FROM users WHERE user_name='${username}' and password='${password}'`;
+    const query = 'SELECT * FROM users WHERE user_name = $1 AND password = crypt($2, password)';
     console.log(query);
-    pool.query(query, (error, results) => {
+    pool.query(query, [username, password], (error, results) => {
       if (error) {
         throw error
       }
