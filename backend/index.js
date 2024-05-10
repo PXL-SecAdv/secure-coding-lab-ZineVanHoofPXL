@@ -5,9 +5,9 @@ const bodyParser = require('body-parser');
 const app = express();
 const cors = require('cors')
 
-require('dotenv').config()
-
 const port=3000;
+
+require('dotenv').config()
 
 const pool = new pg.Pool({
     user: process.env.POSTGRES_NEW_USER,

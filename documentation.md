@@ -77,5 +77,18 @@ POSTGRES_NEW_PASSWORD=ilovesecurity
 POSTGRES_NEW_DB=pxldb
 ```
 
+```js
+require('dotenv').config()
+
+const pool = new pg.Pool({
+    user: process.env.POSTGRES_NEW_USER,
+    host: 'db',
+    database: process.env.POSTGRES_NEW_DB,
+    password: process.env.POSTGRES_NEW_PASSWORD,
+    port: 5432,
+    connectionTimeoutMillis: 5000
+})
+```
+
 ### Exposed credentials in an earlier commit
 If our credentials are exposed in an earlier commit, we can change the credentials and exclude those from version control.
