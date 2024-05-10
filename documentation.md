@@ -8,7 +8,7 @@ The sql injection command  ```t' OR 1=1;--``` results in the query ```SELECT * F
 ### Fix
 To fix this, we make the query a parameterized query ```SELECT * FROM users WHERE user_name = $1 AND password = $2```. We have to add ```[username, password]``` to the query function's arguments to pass the variables to the parameterized query.
 
-```js "index.js"
+```js
 app.get('/authenticate/:username/:password', async (request, response) => {
     const username = request.params.username;
     const password = request.params.password;
@@ -28,7 +28,12 @@ app.get('/authenticate/:username/:password', async (request, response) => {
 ### Fix
 The passwords are hashed in the database with a Blowfish-based hashing algorithm. To make sure that we can still login, we hash the input password with the same salt and parameters that are stored with the hashed password in the database with the query ```SELECT * FROM users WHERE user_name = $1 AND password = crypt($2, password)```.
 
-```js "index.js"
+```sql
+insert into users (user_name, password) values ('pxl-admin', crypt('secureandlovinit', gen_salt('bf')));
+insert into users (user_name, password) values ('george', crypt('iwishihadbetteradmins', gen_salt('bf')));
+```
+
+```js
 app.get('/authenticate/:username/:password', async (request, response) => {
     const username = request.params.username;
     const password = request.params.password;
@@ -51,7 +56,7 @@ CORS (Cross-Origin Resource Sharing) is a security feature that allows web serve
 ### Fix
 This can help us make our backend application more secure by disallowing requests coming from origins that are not trusted.
 
-```js "index.js"
+```js
 app.use(cors({
   origin: 'http://localhost:8080',
   methods: ['GET', 'POST', 'PUT', 'DELETE']
